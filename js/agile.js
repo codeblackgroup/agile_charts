@@ -23,7 +23,19 @@
         },
         setup: {
             change_events : function(){
+                $("#select_graph_dataset").change(function(e){
 
+                    var selected_dataset = $("#select_graph_dataset :selected").val();
+                    Data.selected_dataset_index = Graph.graph_names.indexOf(selected_dataset);
+                    $("#select_graph_independent_variable").html('');
+                    $("#select_graph_dependent_variable").html('');
+
+                    var possible_variables = Object.keys(Data.datasets[selected_dataset][0]);
+                    var dict = Data.graph_settings_dict;
+                    dict.independent_variable = possible_variables;
+                    dict.dependent_variable = possible_variables;
+                    Data.load_settings_dict(selected_dataset);
+                });
             },
             click_events : function(){
                 $(".graph-sort-button").unbind('click').click(function(e){
@@ -274,7 +286,7 @@
                 Data.hg_name = $(this).find('[data-graph-name]').attr('data-graph-name');
             });
         },
-        load_settings: function(index) {
+        load_graph_settings: function(index) {
 
             var new_graph = index == null || undefined ? true : false;
             var this_graph = Graph.graph_list[index];    
@@ -286,6 +298,7 @@
             } else {
                 //editing existing graph
                 Data.sg_index = index;
+                Data.selected_dataset_index = index;
                 var graph_name = Object.keys(this_graph).toString();
                 var graph_object = this_graph[graph_name];
                 var modal_title = graph_name + " settings";
@@ -300,32 +313,7 @@
             $("#graph_title").text(modal_title);
             $("#graph_name_input").val(graph_name);
 
-            //load each setting according to selected dataset and, if !new_graph, graph state 
-            $(function() {
-                $(Data.graph_settings_dict["attributes"]).each(function(i, attribute) {
-                    $("#select_graph_" + attribute).html('');
-                    $(Data.graph_settings_dict[attribute]).each(function(j, item) {
-                        if(!new_graph){
-
-                        }
-                        if(this_graph[graph_name][attribute] == item){
-                            var $option = $("<option/>",{
-                                value: item,
-                                text: item,
-                                'selected':'selected',
-                            });
-                        }else{
-                            var $option = $("<option/>",{
-                                value: item,
-                                text: item,
-                            });
-                        }
-                        if(Object.keys(Data.datasets).indexOf($option.value) == -1){
-                            $("#select_graph_" + attribute).append($option);
-                        }                        
-                    });
-                });
-            });
+            Data.load_settings_dict(graph_name);
             //delete button
             $("#delete_graph").html('');
             if(!new_graph){
@@ -449,7 +437,7 @@
                     $("#graph_panel_container").append($graph_panel);
 
                     $("#graph_settings_" + i).click(function() {
-                        Graph.load_settings(i);
+                        Graph.load_graph_settings(i);
                     });
                 }
             });
@@ -586,6 +574,35 @@
 
     Data = {
         datasets : {},
+        load_settings_dict : function(dataset_name){
+            console.log(dataset_name);
+            var new_graph = dataset_name == null || undefined ? true : false;
+            var this_graph = Graph.graph_list[Data.selected_dataset_index][dataset_name];
+            //load each setting according to selected dataset and, if !new_graph, graph state 
+            $(Data.graph_settings_dict["attributes"]).each(function(i, attribute) {
+                $("#select_graph_" + attribute).html('');
+                $(Data.graph_settings_dict[attribute]).each(function(j, item) {
+                    if(!new_graph){
+
+                    }
+                    if(this_graph[attribute] == item){
+                        var $option = $('<option/>',{
+                            value: item,
+                            text: item,
+                            'selected':'selected',
+                        });
+                    }else{
+                        var $option = $('<option/>',{
+                            value: item,
+                            text: item,
+                        });
+                    }
+                    if(Object.keys(Data.datasets).indexOf($option.value) == -1){
+                        $("#select_graph_" + attribute).append($option);
+                    }                        
+                });
+            });
+        },
         graph_settings_dict : {
             dataset: [],
             attributes: ["type", "independent_variable", "dependent_variable","size","order","dataset","format"],
