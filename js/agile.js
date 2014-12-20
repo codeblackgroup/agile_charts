@@ -23,10 +23,9 @@
         },
         setup: {
             change_events : function(){
-                $("#select_graph_dataset").change(function(e){
-
-                    var selected_dataset = $("#select_graph_dataset :selected").val();
-                    Data.selected_dataset_index = Graph.graph_names.indexOf(selected_dataset);
+                $("#select_graph_dataset_name").change(function(e){
+                    var selected_dataset = $("#select_graph_dataset_name :selected").val();
+                    Data.selected_dataset_index = Object.keys(Data.datasets).indexOf(selected_dataset);
                     $("#select_graph_independent_variable").html('');
                     $("#select_graph_dependent_variable").html('');
 
@@ -35,19 +34,22 @@
                     dict.independent_variable = possible_variables;
                     dict.dependent_variable = possible_variables;
                     Data.load_settings_dict(selected_dataset);
+
                 });
             },
             click_events : function(){
+                //sort graphs onclick
                 $(".graph-sort-button").unbind('click').click(function(e){
                     var $this = $(this);
                     var graph_name = $this.attr('data-sort-for');
                     var order = $this.attr('data-sort');
-                    var this_graph = Data.graphs[graph_name];
+                    var this_graph = Graph.graph_objects[graph_name];
                     Graph.save_graph_settings(
                         Graph.graph_list[Graph.graph_names
                              .indexOf(graph_name)]
                              [graph_name],{
                         dataset:this_graph.dataset,
+                        dataset_name:this_graph.dataset_name,
                         name: this_graph.name,
                         independent_variable: this_graph.independent_variable,
                         dependent_variable: this_graph.dependent_variable,
@@ -79,11 +81,9 @@
     }
     Graph = {
         graph_list : [],
+        graph_names: [],
+        graph_objects: [],
         update_all_graphs: function() {
-
-            if(!Graph.graph_names){
-                Graph.graph_names = [];
-            }
 
             $(".chartlist").html('');
             $(Graph.graph_list).each(function(i, item) {
@@ -104,40 +104,29 @@
             if(Graph.graph_list.length == 0){
                 $(".chartlist").append("<li>No charts to display.</li>")
             }
-            Data.graph_settings_dict.dataset = Graph.graph_names;
+            Data.graph_settings_dict.dataset_name = Object.keys(Data.datasets);
             Template.render();
         },
         //update one particular graph
         update_graph: function(graph_object) {
 
-            if(!Data.graphs){
-                Data.graphs = [];
-            }
-
             var graph_list_object = graph_object[Object.keys(graph_object).toString()];
+            var index = graph_list_object.index;
             var graph_name = graph_list_object.name;
-            $("#graph_title_" + graph_list_object.index).text(graph_name);
-
+            
+            $("*[data-id='graph_title_" + index +"']").text(graph_name);
             //copy graph_list_object to Graph.graphs[graph_name]
-            Data.graphs[graph_name] = $.extend({}, graph_list_object)
-            var this_graph = Data.graphs[graph_name];
-            var hovered_graph = Data.graphs[Data.hg_name];
+            Graph.graph_objects[graph_name] = $.extend({}, graph_list_object)
+            var this_graph = Graph.graph_objects[graph_name];
+            var hovered_graph = Graph.graph_objects[Data.hg_name];
 
-            //get format of dependent variable (output type)
-            /*
-            $(Data.output_types).each(function(i,item){
-                if(item.type == this_graph.dependent_variable){
-                    this_graph.format = item.format;
-                }
-            });
-            */
             this_graph.dimensions = Operations.parse_graph_size(graph_list_object.size);
             this_graph.pixel_height = this_graph.dimensions.height.pixel_height;
             this_graph.dataset = [];
             Graph.output_items = [];
             
             var generate_dataset = function(){
-                var raw_dataset = Data.datasets[graph_name];
+                var raw_dataset = Data.datasets[this_graph.dataset_name];
                 this_graph.dataset = raw_dataset.map(function(item){
                     var iv = item[this_graph.independent_variable];
                     var dv = parseFloat(item[this_graph.dependent_variable]);
@@ -175,7 +164,7 @@
                 var value = item[1];
                 this_graph.dataset_sum += value;
             });
-            $("#" + this_graph.id).highcharts({
+            $("*[data-id='"+this_graph.id+"']").highcharts({
                 chart: {
                     type: this_graph.type,
                     height: this_graph.pixel_height,
@@ -261,7 +250,7 @@
                         //if independent variable is "All Brands" or "All Groups"
                         //do not display graph images
                         //only display product data
-                        var hovered_graph = Data.graphs[Data.hg_name];
+                        var hovered_graph = Graph.graph_objects[Data.hg_name];
                         var name = this.key;
                         return "<div>"+name +
                                ": " +
@@ -303,7 +292,7 @@
                 var graph_object = this_graph[graph_name];
                 var modal_title = graph_name + " settings";
                 //set iv and dv in settings dict, depending on the dataset selected
-                var possible_variables = Object.keys(Data.datasets[graph_name][0]);
+                var possible_variables = Object.keys(Data.datasets[graph_object.dataset_name][0]);
                 var dict = Data.graph_settings_dict;
                 dict.independent_variable = possible_variables;
                 dict.dependent_variable = possible_variables;
@@ -313,7 +302,7 @@
             $("#graph_title").text(modal_title);
             $("#graph_name_input").val(graph_name);
 
-            Data.load_settings_dict(graph_name);
+            Data.load_settings_dict(graph_name,graph_object.dataset_name);
             //delete button
             $("#delete_graph").html('');
             if(!new_graph){
@@ -339,19 +328,19 @@
                           $("#graph_name_input").val() !== Graph.graph_names[index])){
                     alert("There is already a graph with this name. Please choose a different name.");
                 }else{
-                    //Data.sp_index = $("#main_product_settings .drop-text").text().index();
                     //create new object from input values
+                    var index = new_graph ? Graph.graph_list.length : index;
                     var new_graph_object = {
                         name: $("#graph_name_input").val(),
-                        dataset: $("#select_graph_dataset :selected").text(),
+                        dataset_name: $("#select_graph_dataset :selected").text(),
                         independent_variable: $("#select_graph_independent_variable :selected").text(),
                         dependent_variable: $("#select_graph_dependent_variable :selected").text(),
                         type: $("#select_graph_type :selected").text(),
                         size: $("#select_graph_size :selected").text(),
                         order: $("#select_graph_order :selected").text(),
                         format: $("#select_graph_format :selected").text(),
-                        index: new_graph ? Graph.graph_list.length : index,
-                        id: $("#graph_name_input").val().replace(/ /g, '_'),
+                        index: index,
+                        id: $("#graph_name_input").val(),
                     };
                     if (!new_graph) {
                         Graph.save_graph_settings(graph_object, new_graph_object);
@@ -369,11 +358,15 @@
             Graph.generate_all_graphs();
         },
         create_new_graph: function(graph_object) {
-            var name = graph_object.name;
+            var g = graph_object;
+            //if name is already taken, add index to name to distinguish from other graph(s)
+            g.name = Graph.graph_names.indexOf(g.name) > -1 ? g.name + ' ('+g.index+')' : g.name;
+            //add index to object id, save
+            g.id = g.id.replace(/ /g, '_')+'_'+g.index;
             var graph_list = Graph.graph_list;
-            Graph.graph_names.push(name);
-            graph_list[graph_object.index] = {};
-            graph_list[graph_object.index][name] = graph_object;
+            Graph.graph_names.push(g.name);
+            graph_list[g.index] = {};
+            graph_list[g.index][g.name] = graph_object;
             Graph.generate_all_graphs();
         },
         delete_graph: function(index) {
@@ -398,21 +391,21 @@
                     });
                     var $graph_panel_header_sort_asc = $("<span/>", {
                         class:"floatright glyphicon glyphicon-chevron-up graph-sort-button descriptive",
-                        id: "graph_sort_asc_"+i,
+                        "data-id": "graph_sort_asc_"+i,
                         "data-sort-for":graph_list_object.name,
                         "data-sort": "Ascending",
                         "data-description":"Sort " + graph_list_object.name +" items in ascending order.",
                     });
                     var $graph_panel_header_sort_desc = $("<span/>", {
                         class:"floatright glyphicon glyphicon-chevron-down graph-sort-button descriptive",
-                        id: "graph_sort_desc_"+i,
+                        "data-id": "graph_sort_desc_"+i,
                         "data-sort-for":graph_list_object.name,
                         "data-sort": "Descending",
                         "data-description":"Sort " + graph_list_object.name +" items in descending order.",
                     });
                     var $graph_panel_header_settings = $("<span/>", {
                         class: "floatright glyphicon glyphicon-cog graph-settings-modal-icon descriptive",
-                        id: "graph_settings_" + i,
+                        "data-id": "graph_settings_" + i,
                         "data-settings-for": graph_list_object.name,
                         "data-description": "Adjust graph settings for " + graph_list_object.name + ".",
                     });
@@ -420,12 +413,12 @@
                         class: "floatleft descriptive",
                         "data-description": graph_list_object.independent_variable + " vs. " + graph_list_object.dependent_variable,
                         text: graph_list_object.name,
-                        id: "graph_title_" + i,
+                        "data-id": "graph_title_" + i,
                     });
                     var $graph_panel_body = $("<div/>", {
                         class: "panel-body-custom no-padding",
                         "data-graph-name": graph_list_object.name,
-                        id: graph_list_object.id,
+                        "data-id": graph_list_object.id,
                     });
 
                     $graph_panel.append([$graph_panel_header,$graph_panel_body]);
@@ -436,7 +429,7 @@
 
                     $("#graph_panel_container").append($graph_panel);
 
-                    $("#graph_settings_" + i).click(function() {
+                    $("[data-id='graph_settings_"+i+"']").click(function() {
                         Graph.load_graph_settings(i);
                     });
                 }
@@ -476,8 +469,8 @@
                     size: $table.attr('data-size'),
                     type: $table.attr('data-type'),
                     order: $table.attr('data-order'),
-                    id: $table.attr('data-id'),
-                    dataset: $table.attr('data-dataset'),
+                    id: $table.attr('id'),
+                    dataset_name: $table.attr('data-dataset'),
                     format: $table.attr('data-format'),
                     index: Graph.graph_list.length,
                 };
@@ -574,10 +567,9 @@
 
     Data = {
         datasets : {},
-        load_settings_dict : function(dataset_name){
-            console.log(dataset_name);
+        load_settings_dict : function(graph_name,dataset_name){
             var new_graph = dataset_name == null || undefined ? true : false;
-            var this_graph = Graph.graph_list[Data.selected_dataset_index][dataset_name];
+            var this_graph = Graph.graph_list[Data.selected_dataset_index][graph_name];
             //load each setting according to selected dataset and, if !new_graph, graph state 
             $(Data.graph_settings_dict["attributes"]).each(function(i, attribute) {
                 $("#select_graph_" + attribute).html('');
@@ -604,8 +596,8 @@
             });
         },
         graph_settings_dict : {
-            dataset: [],
-            attributes: ["type", "independent_variable", "dependent_variable","size","order","dataset","format"],
+            attributes: ["type", "independent_variable", "dependent_variable","size","order","dataset_name","format"],
+            dataset_name: [],
             type: ['bar', 'pie', 'column', 'area', 'scatter', 'line'],
             independent_variable: [],
             dependent_variable: [],
@@ -616,7 +608,5 @@
     }
 
     Template.render();
-    Graph.generate_all_graphs(Graph.graph_list);
-
 
 }(window.agile = window.agile || {}, jQuery));

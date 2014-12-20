@@ -25,7 +25,7 @@
 								<div>
 									Graph dataset
 								</div>
-								<select class="form-control" id="select_graph_dataset">
+								<select class="form-control" id="select_graph_dataset_name">
 
 								</select>
 							</div>
@@ -107,20 +107,20 @@
             			<div class="page-header">
             				<h2>Tables</h2>
             			</div>
+            			<code> To start, open up the console (F12) and type: Operations.convert.table_to_object("#affluent_black_communities") </code>
             			<div class="tables-container">
             				<div class="col-md-12">
 
             				</div>
             				<div class="col-md-6 table-box">
             					<b>Dataset 1 - Wealthy Black People</b>
-            					<table id="wealthy_black_people_table" 
+            					<table id="wealthy_black_people" 
             						   class="table hc-dataset-table"
             						   data-independent-variable="Name"
             						   data-dependent-variable="Net Worth"
             						   data-size="2x1"
             						   data-type="column"
             						   data-name="Wealthy Black People"
-            						   data-id="wealthy_black_people"
             						   data-dataset="Wealthy Black People"
             						   data-order="None"
             						   data-format="currency">
@@ -152,14 +152,13 @@
             				</div>
             				<div class="col-md-6 table-box">
             					<b>Dataset 2 - Affluent Black Communities</b>
-            					<table id="affluent_black_communities_table" 
+            					<table id="affluent_black_communities" 
             						   class="table hc-dataset-table"
             						   data-independent-variable="Community"
             						   data-dependent-variable="Median Household Income"
             						   data-size="2x1"
             						   data-type="column"
             						   data-name="Affluent Black Communities"
-            						   data-id="affluent_black_communities"
             						   data-dataset="Affluent Black Communities"
             						   data-order="None"
             						   data-format="currency">
