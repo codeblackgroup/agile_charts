@@ -2,7 +2,19 @@
 
     Agile = {
         create_graph : function(object){
-            Graph.create_new_graph()    
+            var convert_from = {
+                csv : function(){
+
+                },
+                table : function(){
+
+                },
+                json : function(){
+
+                },
+            }
+            convert_from[object.datatype](param);
+            Graph.create_new_graph(graph_object)    
         },
         update_graph: function(object){
 
@@ -42,6 +54,7 @@
                     var graph_name = $this.attr('data-sort-for');
                     var order = $this.attr('data-sort');
                     var this_graph = Graph.graph_objects[graph_name];
+                    console.log(order);
                     Graph.save_graph_settings(
                         Graph.graph_list[Graph.graph_names
                              .indexOf(graph_name)]
@@ -132,6 +145,7 @@
                         console.log("Dependent Variable : "+dv);
                         console.log("Your dependent variable must be numeric.");
                     }else{
+                        console.log(dv);
                         return [iv,dv];
                     }
                 }); 
@@ -203,7 +217,6 @@
                     lineColor: '#aaa',
                 },
                 yAxis: {
-                    min: 0,
                     title: {
                         text: this_graph.dependent_variable
                     },
@@ -518,7 +531,7 @@
                 case "number_hundredth":
                     return (Math.round(value * 100) / 100).toLocaleString();
                 case "percent":
-                    return (Math.round(value * 10000) / 100).toFixed(2) + "%";
+                    return (Math.round(value * 100) / 100).toFixed(2) + "%";
                 case "currency":
                     return "$" + (Math.round(value)).toLocaleString();
                 case "currency_cents":
@@ -571,7 +584,6 @@
                     if(!new_graph){
 
                     }
-                    console.log('thisgraphAttribute: '+this_graph[attribute])
                     if(this_graph[attribute] == item){
                         var $option = $('<option/>',{
                             value: item,
