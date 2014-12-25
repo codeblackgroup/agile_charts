@@ -169,3 +169,23 @@
 	margin-top:30px;
 	border-top:1px solid #ddd;
 }
+.graph-settings-modal{
+    background: #fff;
+    border: none;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    border-radius: 3px;
+    color: #000;
+    display: none;
+    height: 550px;
+    moz-border-radius: 3px;
+    moz-transition: opacity .75s ease-in-out;
+    ms-transition: opacity .75s ease-in-out;
+    o-transition: opacity .75s ease-in-out;
+    position: fixed;
+    right: 50px;
+    top: 50px;
+    transition: opacity .75s ease-in-out;
+    webket-border-radius: 3px;
+    webkit-transition: opacity .75s ease-in-out;
+    width: 332px;
+}

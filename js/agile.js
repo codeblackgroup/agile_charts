@@ -1,37 +1,37 @@
 (function(agile, $, undefined){
 
     Agile = {
-        create_graph : function(object){
-            var convert_from = {
-                csv : function(){
-
-                },
-                table : function(){
-
-                },
-                json : function(){
-
-                },
-            }
-            convert_from[object.datatype](param);
-            Graph.create_new_graph(graph_object)    
+        createGraph : function(object){
+            var graphObject = Operations.convert[object.datatype](object.identifier);
+            Graph.create_new_graph(graphObject)    
         },
-        update_graph: function(object){
-
+        updateGraph: function(graphName,object){
+            var index = Graph.graph_names.indexOf(graphName);
+            var oldGraphObject = Graph.graph_list[index][graphName];
+            var newGraphObject = $.extend(true, oldGraphObject, object);
+            Graph.save_graph_settings(oldGraphObject,newGraphObject)
         },
-        delete_graph: function(name){
-
+        deleteGraph: function(graphName){
+            var index = Graph.graph_names.indexOf(graphName);
+            Graph.delete_graph(index);
         },
-        export_graph: function(object,export_as){
-
+        exportGraph: function(object,export_to){
+            
         },
+        getEmbedCode: function(graph_name){
+
+        }
     }
     Template = {
+        graph_panels: [],
         render : function(){
+
             Template.setup.change_events();
             Template.setup.click_events();
             Template.setup.hover_events();
             Template.setup.custom_events();
+
+            Template.createSettingsModal();
         },
         setup: {
             change_events : function(){
@@ -86,8 +86,269 @@
                 $(".tooltip-element").tooltip();
             },
             custom_events : function(){
-                
+
+            },
+        },
+        a:false,
+        createSettingsModal: function(){
+
+            Template.settingsModal = $('<div/>',{
+                class: 'modal fade',
+                id: 'settingsModal',
+            });
+
+            var $mDialog = $('<div/>',{class:'modal-dialog'});
+            var $mContent = $('<div/>',{class:'modal-content'});
+            var $mHeader = $('<div/>',{class:'modal-header'});
+            var $gTitle = $('<div/>',{id:'graph_title'});
+            var $mBody = $('<div/>',{class:'modal-body'});
+            var $gInterface = $('<div/>',{class:'graph-creation-interface'});
+
+            var $gDataset = $('<div/>',{id:'graph_dataset_settings'});
+            var $gDatasetTitle = $('<div/>',{
+                class:'graph-dataset-settings-title',
+                text: 'Dataset Name',
+            });
+            var $gDatasetSelect = $('<select/>',{
+                class: 'form-control',
+                id:'select_graph_dataset_name',
+            });
+            
+            var $gName = $('<div/>',{id:'graph_name_settings'});
+            var $gNameTitle = $('<div/>',{
+                class:'graph-name-settings-title',
+                text: 'Graph Name',
+            });
+            var $gNameSelect = $('<input/>',{
+                type: 'text',
+                class: 'form-control',
+                id:'graph_name_input',
+                placeholder:'Name this graph...',
+            });
+
+            var $gType = $('<div/>',{id:'graph_type_settings'});
+            var $gTypeTitle = $('<div/>',{
+                class:'graph-type-settings-title',
+                text:'Graph Type',
+            });
+            var $gTypeSelect = $('<select/>',{
+                class: 'form-control',
+                id:'select_graph_type',
+            });
+
+            var $gIndependentVariable = $('<div/>',{id:'graph_independent_variable_settings'});
+            var $gIndependentVariableTitle = $('<div/>',{
+                class:'graph-independent-variable-settings-title',
+                text:'Independent Variable',
+            });
+            var $gIndependentVariableSelect = $('<select/>',{
+                class: 'form-control',
+                id:'select_graph_independent_variable',
+            });
+
+            var $gDependentVariable = $('<div/>',{id:'graph_dependent_variable_settings'});
+            var $gDependentVariableTitle = $('<div/>',{
+                class:'graph-dependent-variable-settings-title',
+                text:'Dependent Variable',
+            });
+            var $gDependentVariableSelect = $('<select/>',{
+                class: 'form-control',
+                id:'select_graph_dependent_variable',
+            });
+
+            var $gSize = $('<div/>',{id:'graph_size_settings'});
+            var $gSizeTitle = $('<div/>',{
+                class:'graph-size-settings-title',
+                text:'Graph Dimensions',
+            });
+            var $gSizeSelect = $('<select/>',{
+                class: 'form-control',
+                id:'select_graph_size',
+            });
+
+            var $gOrder = $('<div/>',{id:'graph_order_settings'});
+            var $gOrderTitle = $('<div/>',{
+                class:'graph-order-settings-title',
+                text:'Order',
+            });
+            var $gOrderSelect = $('<select/>',{
+                class: 'form-control',
+                id:'select_graph_order',
+            });
+
+            var $gFormat = $('<div/>',{id:'graph_format_settings'});
+            var $gFormatTitle = $('<div/>',{
+                class:'graph-format-settings-title',
+                text:'Graph Format',
+            });
+            var $gFormatSelect = $('<select/>',{
+                class: 'form-control',
+                id:'select_graph_format',
+            });
+
+            var $mFooter = $('<div/>',{class:'modal-footer'}); 
+            var $deleteGraph = $('<div/>',{id:'delete_graph'});
+            var $createGraph = $('<div/>',{id:'create_graph'});
+            var $closeButton = $('<button/>',{
+                type:'button',
+                class: 'btn btn-default',
+                'data-dismiss':'modal',
+                text:'close',
+            }); 
+            var $saveButton = $('<button/>',{
+                type:'button',
+                class:'btn btn-default',
+                id:'save_graph_settings_button',
+                text:'Save Graph',
+            });
+            
+            Template.settingsModal.append(
+                $mDialog.append(
+                    $mContent.append(
+                        [
+                            $mHeader.append(
+                                $gTitle
+                            ),
+                            $mBody.append(
+                                $gInterface.append(
+                                    [
+                                        $gDataset.append(
+                                            [
+                                                $gDatasetTitle,
+                                                $gDatasetSelect,
+                                            ]
+                                        ),
+                                        $gType.append(
+                                            [
+                                                $gTypeTitle,
+                                                $gTypeSelect,
+                                            ]
+                                        ),
+                                        $gIndependentVariable.append(
+                                            [
+                                                $gIndependentVariableTitle,
+                                                $gIndependentVariableSelect,
+                                            ]
+                                        ),
+                                        $gDependentVariable.append(
+                                            [
+                                                $gDependentVariableTitle,
+                                                $gDependentVariableSelect,
+                                            ]
+                                        ),
+                                        $gSize.append(
+                                            [
+                                                $gSizeTitle,
+                                                $gSizeSelect,
+                                            ]
+                                        ),
+                                        $gOrder.append(
+                                            [
+                                                $gOrderTitle,
+                                                $gOrderSelect,
+                                            ]
+                                        ),
+                                        $gFormat.append(
+                                            [
+                                                $gFormatTitle,
+                                                $gFormatSelect,
+                                            ]
+                                        ),
+                                    ]
+                                )
+                            ),
+                            $mFooter.append(
+                                [
+                                    $deleteGraph,
+                                    $createGraph.append(
+                                        [
+                                            $closeButton,
+                                            $saveButton,
+                                        ]
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                )
+            )
+
+            $body = $('body');
+            if(Template.a == false){
+                $body.append(Template.settingsModal);
             }
+            Template.a = true;
+        },
+        generateAllGraphs: function() {
+            $(".graph-panel").remove();
+            $(Graph.graph_list).each(function(i, item) {
+                if (typeof item == "object") {
+                    //get graph object of index i from Graph.graph_list
+                    //generate graph panel html for that object
+                    var graph_list_object = item[Object.keys(item).toString()];
+                    var graph_dimensions = Operations.parse_graph_size(graph_list_object.size);
+
+                    var $graph_panel = $("<li/>", {
+                        class: 'panel-box col-md-' + graph_dimensions.width.col_md + ' no-padding graph-panel',
+                    });
+                    var $graph_panel_header = $('<div/>', {
+                        class: 'col-md-12 panel-header',
+                    });
+                    var $graph_panel_header_sort_asc = $("<span/>", {
+                        class:'floatright glyphicon glyphicon-chevron-up graph-sort-button descriptive',
+                        'data-sort-asc-id': "graph_sort_asc_"+i,
+                        'data-sort-for':graph_list_object.name,
+                        'data-sort': "Ascending",
+                        'data-description':'Sort ' + graph_list_object.name + ' items in ascending order.',
+                    });
+                    var $graph_panel_header_sort_desc = $('<span/>', {
+                        class:'floatright glyphicon glyphicon-chevron-down graph-sort-button descriptive',
+                        'data-sort-desc-id': 'graph_sort_desc_'+i,
+                        'data-sort-for':graph_list_object.name,
+                        'data-sort': 'Descending',
+                        'data-description':'Sort ' + graph_list_object.name +' items in descending order.',
+                    });
+                    var $graph_panel_header_settings = $('<span/>', {
+                        class: 'floatright glyphicon glyphicon-cog graph-settings-modal-icon descriptive',
+                        'data-settings-id': 'graph_settings_' + i,
+                        'data-settings-for': graph_list_object.name,
+                        'data-description': 'Adjust graph settings for ' + graph_list_object.name + '.',
+                    });
+                    var $graph_panel_header_title = $('<div/>', {
+                        class: 'floatleft descriptive',
+                        'data-description': graph_list_object.independent_variable + ' vs. ' + graph_list_object.dependent_variable,
+                        text: graph_list_object.name,
+                        'data-title-id': 'graph_title_' + i,
+                    });
+                    var $graph_panel_body = $('<div/>', {
+                        class: 'panel-body-custom no-padding',
+                        'data-graph-name': graph_list_object.name,
+                        'data-graph-id': graph_list_object.id,
+                    });
+
+                    $('#graph_panel_container').append(
+                        $graph_panel.append(
+                            [
+                                $graph_panel_header.append(
+                                [
+                                    $graph_panel_header_title,
+                                    $graph_panel_header_settings,
+                                    $graph_panel_header_sort_asc,
+                                    $graph_panel_header_sort_desc
+                                ]), 
+                                $graph_panel_body,
+                            ]
+                        )
+                    );
+
+                    $('[data-settings-id="graph_settings_'+i+'"]').click(function() {
+                        Graph.load_graph_settings(i);
+                    });
+
+                    Template.graph_panels.push($graph_panel);
+                }
+            });
+            Graph.update_all_graphs();
         },
     }
     Graph = {
@@ -145,7 +406,6 @@
                         console.log("Dependent Variable : "+dv);
                         console.log("Your dependent variable must be numeric.");
                     }else{
-                        console.log(dv);
                         return [iv,dv];
                     }
                 }); 
@@ -354,13 +614,15 @@
                     }
                 }
             });
+
+            $("#settingsModal").modal();
         },
         save_graph_settings: function(old_graph_object, new_graph_object) {
             var name = new_graph_object.name;
             var graph_list = Graph.graph_list;
             graph_list[old_graph_object.index] = {};
             graph_list[old_graph_object.index][name] = new_graph_object;
-            Graph.generate_all_graphs();
+            Template.generateAllGraphs();
         },
         create_new_graph: function(graph_object) {
             var g = graph_object;
@@ -372,79 +634,17 @@
             Graph.graph_names.push(g.name);
             graph_list[g.index] = {};
             graph_list[g.index][g.name] = graph_object;
-            Graph.generate_all_graphs();
+            Template.generateAllGraphs();
         },
         delete_graph: function(index) {
             Graph.graph_names.splice(index,1);
             Graph.graph_list.splice(index,1);
-            Graph.generate_all_graphs();
-        },
-        generate_all_graphs: function() {
-            $(".graph-panel").remove();
-            $(Graph.graph_list).each(function(i, item) {
-                if (typeof item == "object") {
-                    //get graph object of index i from Graph.graph_list
-                    //generate graph panel html for that object
-                    var graph_list_object = item[Object.keys(item).toString()];
-                    var graph_dimensions = Operations.parse_graph_size(graph_list_object.size);
-
-                    var $graph_panel = $("<li/>", {
-                        class: "panel-box col-md-" + graph_dimensions.width.col_md + " no-padding graph-panel",
-                    });
-                    var $graph_panel_header = $("<div/>", {
-                        class: "col-md-12 panel-header",
-                    });
-                    var $graph_panel_header_sort_asc = $("<span/>", {
-                        class:"floatright glyphicon glyphicon-chevron-up graph-sort-button descriptive",
-                        "data-sort-asc-id": "graph_sort_asc_"+i,
-                        "data-sort-for":graph_list_object.name,
-                        "data-sort": "Ascending",
-                        "data-description":"Sort " + graph_list_object.name +" items in ascending order.",
-                    });
-                    var $graph_panel_header_sort_desc = $("<span/>", {
-                        class:"floatright glyphicon glyphicon-chevron-down graph-sort-button descriptive",
-                        "data-sort-desc-id": "graph_sort_desc_"+i,
-                        "data-sort-for":graph_list_object.name,
-                        "data-sort": "Descending",
-                        "data-description":"Sort " + graph_list_object.name +" items in descending order.",
-                    });
-                    var $graph_panel_header_settings = $("<span/>", {
-                        class: "floatright glyphicon glyphicon-cog graph-settings-modal-icon descriptive",
-                        "data-settings-id": "graph_settings_" + i,
-                        "data-settings-for": graph_list_object.name,
-                        "data-description": "Adjust graph settings for " + graph_list_object.name + ".",
-                    });
-                    var $graph_panel_header_title = $("<div/>", {
-                        class: "floatleft descriptive",
-                        "data-description": graph_list_object.independent_variable + " vs. " + graph_list_object.dependent_variable,
-                        text: graph_list_object.name,
-                        "data-title-id": "graph_title_" + i,
-                    });
-                    var $graph_panel_body = $("<div/>", {
-                        class: "panel-body-custom no-padding",
-                        "data-graph-name": graph_list_object.name,
-                        "data-graph-id": graph_list_object.id,
-                    });
-
-                    $graph_panel.append([$graph_panel_header,$graph_panel_body]);
-                    $graph_panel_header.append([$graph_panel_header_title,
-                                                $graph_panel_header_settings,
-                                                $graph_panel_header_sort_asc,
-                                                $graph_panel_header_sort_desc]);
-
-                    $("#graph_panel_container").append($graph_panel);
-
-                    $("[data-settings-id='graph_settings_"+i+"']").click(function() {
-                        Graph.load_graph_settings(i);
-                    });
-                }
-            });
-            Graph.update_all_graphs();
+            Template.generateAllGraphs();
         },
     }
     Operations = {
         convert : {
-            table_to_object : function(table_id){
+            table: function(table_id){
 
                 var id = table_id;
                 var $table = $('#'+id);
@@ -469,28 +669,36 @@
                 }).get();
                 //create graph_list with data attributes stored in table
                 var graph_object = {
-                    name: $table.attr('data-name'),
-                    independent_variable: $table.attr('data-independent-variable'),
-                    dependent_variable: $table.attr('data-dependent-variable'),
-                    size: $table.attr('data-size'),
-                    type: $table.attr('data-type'),
-                    order: $table.attr('data-order'),
-                    id: $table.attr('id'),
-                    dataset_name: $table.attr('data-dataset-id'),
-                    format: $table.attr('data-format'),
+                    name: $table.attr('data-name') || 'Default Graph ' + Graph.graph_list.length,
+                    independent_variable: $table.attr('data-independent-variable') || header_keys[0],
+                    dependent_variable: $table.attr('data-dependent-variable') || header_keys[1], //find first numeric
+                    size: $table.attr('data-size') || '2x1',
+                    type: $table.attr('data-type') || 'column',
+                    order: $table.attr('data-order') || 'None',
+                    id: $table.attr('id') || table_id,
+                    dataset_name: $table.attr('data-dataset-id') || table_id,
+                    format: $table.attr('data-format') || 'number',
                     index: Graph.graph_list.length,
                 };
                 Graph.create_new_graph(graph_object);
                 //Agile.create_graph(graph_object);
             },
-            json_to_object : function(json){
+            json: function(json){
 
             },
-            csv_to_object : function(csv){
+            csv: function(csv){
 
             },
         },
-        sorting : {
+        exporting: {
+            csv: function(object){
+
+            },
+            json: function(object){
+
+            },
+        },
+        sorting: {
             quicksort: function(a,order) {
                 var sorted_array;
                 var qsort = function(a){
@@ -499,11 +707,11 @@
                     right = [],
                     pivot = a[0];
                     for (var i = 1; i < a.length; i++) {
-                        if(order== "Ascending"){
+                        if(order== 'Ascending'){
                             a[i] < pivot ?
                                    left.push(a[i]) :
                                    right.push(a[i]);
-                        }else if(order == "Descending"){
+                        }else if(order == 'Descending'){
                             a[i] > pivot ?
                                    left.push(a[i]) :
                                    right.push(a[i]);
