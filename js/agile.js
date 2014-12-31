@@ -1,3 +1,14 @@
+/*
+ * Agile.js 
+ * https://github.com/audioburn/agile
+ *
+ * Copyright 2014, Mike Johnson, Jr.
+ * https://mikejohnsonjr.com
+ *
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
+ */
+
 (function(agile, $, undefined){
 
     Agile = {
@@ -15,7 +26,7 @@
             var index = Graph.graph_names.indexOf(graphName);
             Graph.delete_graph(index);
         },
-        exportGraph: function(object,export_to){
+        exportGraph: function(object,exportTo){
             
         },
         getEmbedCode: function(graph_name){
@@ -31,20 +42,13 @@
             Template.setup.hover_events();
             Template.setup.custom_events();
 
-            Template.createSettingsModal();
         },
         setup: {
             change_events : function(){
                 $("#select_graph_dataset_name").change(function(e){
                     var selected_dataset = $("#select_graph_dataset_name :selected").val();
                     Data.selected_dataset_index = Object.keys(Data.datasets).indexOf(selected_dataset);
-                    $("#select_graph_independent_variable").html('');
-                    $("#select_graph_dependent_variable").html('');
-                    var possible_variables = Object.keys(Data.datasets[selected_dataset][0]);
-                    var dict = Data.graph_settings_dict;
-                    dict.independent_variable = possible_variables;
-                    dict.dependent_variable = possible_variables;
-                    Data.load_settings_dict(selected_dataset);
+                    Data.update_settings_iv_dv(selected_dataset);
                 });
             },
             click_events : function(){
@@ -54,7 +58,6 @@
                     var graph_name = $this.attr('data-sort-for');
                     var order = $this.attr('data-sort');
                     var this_graph = Graph.graph_objects[graph_name];
-                    console.log(order);
                     Graph.save_graph_settings(
                         Graph.graph_list[Graph.graph_names
                              .indexOf(graph_name)]
@@ -89,196 +92,7 @@
 
             },
         },
-        a:false,
-        createSettingsModal: function(){
-
-            Template.settingsModal = $('<div/>',{
-                class: 'modal fade',
-                id: 'settingsModal',
-            });
-
-            var $mDialog = $('<div/>',{class:'modal-dialog'});
-            var $mContent = $('<div/>',{class:'modal-content'});
-            var $mHeader = $('<div/>',{class:'modal-header'});
-            var $gTitle = $('<div/>',{id:'graph_title'});
-            var $mBody = $('<div/>',{class:'modal-body'});
-            var $gInterface = $('<div/>',{class:'graph-creation-interface'});
-
-            var $gDataset = $('<div/>',{id:'graph_dataset_settings'});
-            var $gDatasetTitle = $('<div/>',{
-                class:'graph-dataset-settings-title',
-                text: 'Dataset Name',
-            });
-            var $gDatasetSelect = $('<select/>',{
-                class: 'form-control',
-                id:'select_graph_dataset_name',
-            });
-            
-            var $gName = $('<div/>',{id:'graph_name_settings'});
-            var $gNameTitle = $('<div/>',{
-                class:'graph-name-settings-title',
-                text: 'Graph Name',
-            });
-            var $gNameSelect = $('<input/>',{
-                type: 'text',
-                class: 'form-control',
-                id:'graph_name_input',
-                placeholder:'Name this graph...',
-            });
-
-            var $gType = $('<div/>',{id:'graph_type_settings'});
-            var $gTypeTitle = $('<div/>',{
-                class:'graph-type-settings-title',
-                text:'Graph Type',
-            });
-            var $gTypeSelect = $('<select/>',{
-                class: 'form-control',
-                id:'select_graph_type',
-            });
-
-            var $gIndependentVariable = $('<div/>',{id:'graph_independent_variable_settings'});
-            var $gIndependentVariableTitle = $('<div/>',{
-                class:'graph-independent-variable-settings-title',
-                text:'Independent Variable',
-            });
-            var $gIndependentVariableSelect = $('<select/>',{
-                class: 'form-control',
-                id:'select_graph_independent_variable',
-            });
-
-            var $gDependentVariable = $('<div/>',{id:'graph_dependent_variable_settings'});
-            var $gDependentVariableTitle = $('<div/>',{
-                class:'graph-dependent-variable-settings-title',
-                text:'Dependent Variable',
-            });
-            var $gDependentVariableSelect = $('<select/>',{
-                class: 'form-control',
-                id:'select_graph_dependent_variable',
-            });
-
-            var $gSize = $('<div/>',{id:'graph_size_settings'});
-            var $gSizeTitle = $('<div/>',{
-                class:'graph-size-settings-title',
-                text:'Graph Dimensions',
-            });
-            var $gSizeSelect = $('<select/>',{
-                class: 'form-control',
-                id:'select_graph_size',
-            });
-
-            var $gOrder = $('<div/>',{id:'graph_order_settings'});
-            var $gOrderTitle = $('<div/>',{
-                class:'graph-order-settings-title',
-                text:'Order',
-            });
-            var $gOrderSelect = $('<select/>',{
-                class: 'form-control',
-                id:'select_graph_order',
-            });
-
-            var $gFormat = $('<div/>',{id:'graph_format_settings'});
-            var $gFormatTitle = $('<div/>',{
-                class:'graph-format-settings-title',
-                text:'Graph Format',
-            });
-            var $gFormatSelect = $('<select/>',{
-                class: 'form-control',
-                id:'select_graph_format',
-            });
-
-            var $mFooter = $('<div/>',{class:'modal-footer'}); 
-            var $deleteGraph = $('<div/>',{id:'delete_graph'});
-            var $createGraph = $('<div/>',{id:'create_graph'});
-            var $closeButton = $('<button/>',{
-                type:'button',
-                class: 'btn btn-default',
-                'data-dismiss':'modal',
-                text:'close',
-            }); 
-            var $saveButton = $('<button/>',{
-                type:'button',
-                class:'btn btn-default',
-                id:'save_graph_settings_button',
-                text:'Save Graph',
-            });
-            
-            Template.settingsModal.append(
-                $mDialog.append(
-                    $mContent.append(
-                        [
-                            $mHeader.append(
-                                $gTitle
-                            ),
-                            $mBody.append(
-                                $gInterface.append(
-                                    [
-                                        $gDataset.append(
-                                            [
-                                                $gDatasetTitle,
-                                                $gDatasetSelect,
-                                            ]
-                                        ),
-                                        $gType.append(
-                                            [
-                                                $gTypeTitle,
-                                                $gTypeSelect,
-                                            ]
-                                        ),
-                                        $gIndependentVariable.append(
-                                            [
-                                                $gIndependentVariableTitle,
-                                                $gIndependentVariableSelect,
-                                            ]
-                                        ),
-                                        $gDependentVariable.append(
-                                            [
-                                                $gDependentVariableTitle,
-                                                $gDependentVariableSelect,
-                                            ]
-                                        ),
-                                        $gSize.append(
-                                            [
-                                                $gSizeTitle,
-                                                $gSizeSelect,
-                                            ]
-                                        ),
-                                        $gOrder.append(
-                                            [
-                                                $gOrderTitle,
-                                                $gOrderSelect,
-                                            ]
-                                        ),
-                                        $gFormat.append(
-                                            [
-                                                $gFormatTitle,
-                                                $gFormatSelect,
-                                            ]
-                                        ),
-                                    ]
-                                )
-                            ),
-                            $mFooter.append(
-                                [
-                                    $deleteGraph,
-                                    $createGraph.append(
-                                        [
-                                            $closeButton,
-                                            $saveButton,
-                                        ]
-                                    )
-                                ]
-                            )
-                        ]
-                    )
-                )
-            )
-
-            $body = $('body');
-            if(Template.a == false){
-                $body.append(Template.settingsModal);
-            }
-            Template.a = true;
-        },
+        
         generateAllGraphs: function() {
             $(".graph-panel").remove();
             $(Graph.graph_list).each(function(i, item) {
@@ -584,7 +398,7 @@
                 });
                 $("#delete_graph").append($delete_graph_element);
                 $("#delete_graph_button").click(function(e){
-                    Output.graph.delete_graph(index);
+                    Graph.delete_graph(index);
                 });
             }
             //save button
@@ -604,9 +418,10 @@
                         size: $("#select_graph_size :selected").text(),
                         order: $("#select_graph_order :selected").text(),
                         format: $("#select_graph_format :selected").text(),
-                        index: index,
+                        index: Data.sg_index,
                         id: $("#graph_name_input").val(),
                     };
+                    console.log(new_graph_object.independent_variable);
                     if (!new_graph) {
                         Graph.save_graph_settings(graph_object, new_graph_object);
                     } else {
@@ -615,7 +430,7 @@
                 }
             });
 
-            $("#settingsModal").modal();
+            $("#graph_settings_modal").modal();
         },
         save_graph_settings: function(old_graph_object, new_graph_object) {
             var name = new_graph_object.name;
@@ -646,20 +461,20 @@
         convert : {
             table: function(table_id){
 
-                var id = table_id;
-                var $table = $('#'+id);
+                var id = table_id.replace(/#|\./g,'');
+                var $table = $(table_id);
                 //var name = $table.attr('data-name');
                 var table_graphs = [];
 
                 Data.datasets[id] = [];
                 //get keys from headers
                 header_keys = [];
-                $('#'+id+' tr>th').each(function(j,item){
+                $(table_id+' tr>th').each(function(j,item){
                     header_text = $(this).text();
                     header_keys.push(header_text)
                 });
                 //map tds to keys
-                Data.datasets[id] = $('#'+id+' tr:has(td)').map(function(j,v) {
+                Data.datasets[id] = $(table_id+' tr:has(td)').map(function(j,v) {
                     var $td =  $('td', this);
                     var table_object = {};
                     $(header_keys).each(function(k,key){
@@ -667,21 +482,29 @@
                     })
                     return table_object;
                 }).get();
+
+                //find first number header key
+                var first_numeric_hk;
+                $(header_keys).each(function(i,key){
+                    if(!isNaN(Data.datasets[id][0][key])){
+                        first_numeric_hk = key;
+                        return false;
+                    }
+                });
                 //create graph_list with data attributes stored in table
                 var graph_object = {
                     name: $table.attr('data-name') || 'Default Graph ' + Graph.graph_list.length,
                     independent_variable: $table.attr('data-independent-variable') || header_keys[0],
-                    dependent_variable: $table.attr('data-dependent-variable') || header_keys[1], //find first numeric
+                    dependent_variable: $table.attr('data-dependent-variable') || first_numeric_hk, 
                     size: $table.attr('data-size') || '2x1',
                     type: $table.attr('data-type') || 'column',
                     order: $table.attr('data-order') || 'None',
-                    id: $table.attr('id') || table_id,
-                    dataset_name: $table.attr('data-dataset-id') || table_id,
+                    id: $table.attr('id') || id,
+                    dataset_name: $table.attr('data-dataset-id') || id,
                     format: $table.attr('data-format') || 'number',
                     index: Graph.graph_list.length,
                 };
                 Graph.create_new_graph(graph_object);
-                //Agile.create_graph(graph_object);
             },
             json: function(json){
 
@@ -781,32 +604,50 @@
 
     Data = {
         datasets : {},
-        load_settings_dict : function(dataset_name){
-            var new_graph = dataset_name == null || undefined ? true : false;
+        load_settings_dict : function(){
+            //var new_graph = dataset_name == null || undefined ? true : false;
             var graph_name = Object.keys(Graph.graph_list[Data.selected_dataset_index]).toString();
             var this_graph = Graph.graph_list[Data.selected_dataset_index][graph_name];
             //load each setting according to selected dataset and, if !new_graph, graph state 
             $(Data.graph_settings_dict["attributes"]).each(function(i, attribute) {
                 $("#select_graph_" + attribute).html('');
                 $(Data.graph_settings_dict[attribute]).each(function(j, item) {
-                    if(!new_graph){
-
-                    }
-                    if(this_graph[attribute] == item){
-                        var $option = $('<option/>',{
-                            value: item,
-                            text: item,
-                            'selected':'selected',
-                        });
-                    }else{
-                        var $option = $('<option/>',{
-                            value: item,
-                            text: item,
-                        });
-                    }
+                    //if(!new_graph){}
+                    var isSelected = this_graph[attribute] == item ? 'selected' : false;
+                    var $option = $('<option/>',{
+                        class: attribute + '_attr',
+                        value: item,
+                        text: item,
+                        'selected':isSelected,
+                    });
+                    //dont re-append existing datasets
                     if(Object.keys(Data.datasets).indexOf($option.value) == -1){
                         $("#select_graph_" + attribute).append($option);
-                    }                        
+                    }
+                });
+            });
+        },
+        update_settings_iv_dv : function(selected_dataset){
+            
+            var graph_name = Object.keys(Graph.graph_list[Data.selected_dataset_index]).toString();
+            var this_graph = Graph.graph_list[Data.selected_dataset_index][graph_name];
+            var possible_variables = Object.keys(Data.datasets[selected_dataset][0]);
+            var dict = Data.graph_settings_dict;
+            var elements = {
+                independent_variable : $('#select_graph_independent_variable'),
+                dependent_variable : $('#select_graph_dependent_variable'),
+            }
+            var ivdv = ['independent_variable','dependent_variable'];
+            $(ivdv).each(function(i,vartype){
+                dict[vartype] = possible_variables;
+                elements[vartype].html('');
+                $(possible_variables).each(function(i,variable){
+                    var $option = $('<option/>',{
+                        value: variable,
+                        text: variable,
+                        selected: this_graph[vartype] == variable ? 'selected' : false,
+                    });      
+                    elements[vartype].append($option.clone());
                 });
             });
         },
