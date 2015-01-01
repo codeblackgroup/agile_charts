@@ -8,37 +8,26 @@ Agile.js is a jquery plugin that makes it easy to modify tables and create graph
  
 To create a graph from a table: 
 
-`Agile.createGraph({
-
-	dataType:'table',
-	
-	identifer: '#myTable', //or .myTable
-	
-})`
+    Agile.createGraph({
+        dataType:'table',
+        identifer: '#myTable', //or .myTable 
+    });
 
 To create a graph from a csv:
 
-`Agile.createGraph({
-
-	dataType:'csv',
-	
-	identifer:'http://url.to/my.csv'
-	
-})`
+    Agile.createGraph({
+        dataType:'csv',
+        identifer:'http://url.to/my.csv'
+    })
 
 To append a column in a table:
 
-`Agile.tableOps.addColumn({
-
-	name: 'My New Column', //this will be displayed as the header column
-	
-	col1: 'Benefit', //first value to base new column value off of
-	
-	col2: 'Cost', //second value to base new column value off of
-	
-	operation: 'subtract', //operation to perform, in this case, col1 - col2
-	
-})`
+    Agile.tableOps.addColumn({
+        name: 'My New Column', //this will be displayed as the header column 
+        col1: 'Benefit', //first value to base new column value off of
+        col2: 'Cost', //second value to base new column value off of
+        operation: 'subtract', //operation to perform, in this case, col1 - col2
+    })
 
 ## Contributing
  
