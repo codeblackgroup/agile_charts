@@ -10,14 +10,14 @@ To create a graph from a table:
 
     Agile.createGraph({
         dataType:'table',
-        identifer: '#myTable', //or .myTable 
+        identifier: '#myTable', //or .myTable 
     });
 
 To create a graph from a csv:
 
     Agile.createGraph({
         dataType:'csv',
-        identifer:'http://url.to/my.csv'
+        identifier:'http://url.to/my.csv'
     })
 
 To append a column in a table:
@@ -40,6 +40,7 @@ To append a column in a table:
 ## Credits
  
 Creator: Mike Johnson Jr.
+
 Graphs powered by: HighCharts
  
 ## License
@@ -53,5 +54,4 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 </content>
-  <tabTrigger>readme</tabTrigger>
 </snippet>
