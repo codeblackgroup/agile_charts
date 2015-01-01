@@ -23,10 +23,10 @@ To create a graph from a csv:
 To append a column in a table:
 
     Agile.tableOps.addColumn({
-        name: 'My New Column', //this will be displayed as the header column 
-        col1: 'Benefit', //first value to base new column value off of
-        col2: 'Cost', //second value to base new column value off of
-        operation: 'subtract', //operation to perform, in this case, col1 - col2
+        name: 'My New Column',    //this will be displayed as the header text of the new column 
+        col1: 'Benefit',          //header text of first column to base new column value off of
+        col2: 'Cost',             //header text of second column to base new column value off of
+        operation: 'subtract',    //operation to perform, in this case, col1 - col2
     })
 
 ## Contributing
