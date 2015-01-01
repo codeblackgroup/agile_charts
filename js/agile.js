@@ -13,8 +13,7 @@
 
     Agile = {
         createGraph : function(object){
-            var graphObject = Operations.convert[object.datatype](object.identifier);
-            Graph.createNewGraph(graphObject)    
+            Operations.convert[object.dataType](object.identifier);
         },
         updateGraph: function(graphName,object){
             var index = Graph.graphNames.indexOf(graphName);
@@ -31,7 +30,7 @@
         },
         getEmbedCode: function(graphName){
 
-        }
+        },
     }
     Template = {
         graphPanels: [],
@@ -550,6 +549,66 @@
                 }
                 return sortedArray;
             },
+        },
+        tableOps: {
+            addColumn : function(tableId,object){
+                var newColName = object.name;
+                var col1Name = object.col1;
+                var col2Name = object.col2;
+                var operation = object.operation;
+
+                //get keys from headers
+                headerKeys = [];
+                $(tableId+' tr>th').each(function(j,item){
+                    headerText = $(this).text();
+                    headerKeys.push(headerText)
+                });
+                $(tableId + ' tr').each(function(i,row){ 
+                    var $this = $(this);  
+                    if(i==0){
+                        //create header row
+                        $cell = $('<th/>',{
+                            text: newColName,
+                        });
+
+                    }else{
+
+                        var rowText = function(){
+                            var col1Index = headerKeys.indexOf(col1Name);
+                            var col2Index = headerKeys.indexOf(col2Name);
+
+                            var col1CellValue = parseFloat($this.find('td').eq(col1Index).text());
+                            var col2CellValue = parseFloat($this.find('td').eq(col2Index).text());
+
+                            var parseOp = {
+                                add: function(){
+                                    return col1CellValue + col2CellValue;
+                                },
+                                subtract: function(){
+                                    return col1CellValue - col2CellValue;
+                                },
+                                multiply: function(){
+                                    return col1CellValue * col2CellValue;
+                                },
+                                divide: function(){
+                                    return col1CellValue / col2CellValue;
+                                },
+                            }
+                            return parseOp[operation]();
+                            
+                        }
+                        $cell = $('<td/>',{
+                            text: rowText(),
+                        });
+                    }        
+                    $this.append($cell);
+
+                });
+            },
+            addRow : function(TableId,cellArray){
+
+            },
+
         },
         formatValue: function(value, format) {
             switch (format) {
