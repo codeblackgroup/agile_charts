@@ -1,33 +1,35 @@
 <snippet>
-  <content><![CDATA[
-# ${1:Project Name}
+  <content>
+# Agile.js
  
 Agile.js is a jquery plugin that makes it easy to modify tables and create graphs from tables and csv's.
+
+Currently under construction.
  
 ## Usage
  
 To create a graph from a table: 
 
-`Agile.createGraph({
-	dataType:'table',
-	identifer: '#myTable', //or .myTable
-})`
+    Agile.createGraph({
+        dataType:'table',
+        identifier: '#myTable', //or .myTable 
+    });
 
 To create a graph from a csv:
 
-`Agile.createGraph({
-	dataType:'csv',
-	identifer:'http://url.to/my.csv'
-})`
+    Agile.createGraph({
+        dataType:'csv',
+        identifier:'http://url.to/my.csv'
+    })
 
 To append a column in a table:
 
-`Agile.tableOps.addColumn({
-	name: 'My New Column', //this will be displayed as the header column
-	col1: 'Benefit', //first value to base new column value off of
-	col2: 'Cost', //second value to base new column value off of
-	operation: 'subtract', //operation to perform, in this case, col1 - col2
-})`
+    Agile.tableOps.addColumn({
+        name: 'My New Column',    //this will be displayed as the header text of the new column 
+        col1: 'Benefit',          //header text of first column to base new column value off of
+        col2: 'Cost',             //header text of second column to base new column value off of
+        operation: 'subtract',    //operation to perform, in this case, col1 - col2
+    })
 
 ## Contributing
  
@@ -40,6 +42,7 @@ To append a column in a table:
 ## Credits
  
 Creator: Mike Johnson Jr.
+
 Graphs powered by: HighCharts
  
 ## License
@@ -52,7 +55,5 @@ The above copyright notice and this permission notice shall be included in all c
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-
-]]></content>
-  <tabTrigger>readme</tabTrigger>
+</content>
 </snippet>
