@@ -3,7 +3,7 @@
  * https://github.com/audioburn/agile
  *
  * Copyright 2014, Mike Johnson, Jr.
- * https://mikejohnsonjr.com
+ * http://mikejohnsonjr.com
  *
  * Licensed under the MIT license:
  * http://www.opensource.org/licenses/MIT
