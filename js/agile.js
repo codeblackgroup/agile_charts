@@ -13,7 +13,7 @@
 
     Agile = {
         createGraph : function(object){
-            Operations.convert[object.dataType](object.identifier);
+            Operations.convertToGraph[object.dataType](object.identifier);
         },
         updateGraph: function(graphName,object){
             var index = Graph.graphNames.indexOf(graphName);
@@ -483,7 +483,6 @@
                     }
                 }
             });
-
             $("#graph_settings_modal").modal();
         },
         saveGraphSettings: function(oldGraphObject, newGraphObject) {
@@ -512,7 +511,7 @@
         },
     }
     Operations = {
-        convert : {
+        convertToGraph : {
             table: function(tableId){
 
                 var id = tableId.replace(/#|\./g,'');
@@ -563,9 +562,50 @@
             json: function(json){
 
             },
-            csv: function(csv){
-
+            csv: function(url){
+                Operations.requests.getCsv(url);
             },
+        },
+        convertToTable : {
+            csv : function(data){
+
+                var container = $('.tables-container');
+
+                var tableCon = $('<div/>',{
+                    class:'col-md-6 table-box',
+                }).append($('<b/>',{text:'Dataset '+Object.keys(
+                    Data.datasets).length + '- ' + Data.selected,}));
+                container.append(tableCon);
+
+                var table = $('<table/>',{
+                    id:Data.selected,
+                    class:'table hc-dataset-table',
+                });
+                tableCon.append(table);
+
+                $(data).each(function(i,item){
+                    var row = $('<tr/>');
+                    table.append(row);
+                    $(item).each(function(j,celltext){
+                        if(i == 0){
+                            cell = $('<th/>',{
+                                text: celltext,
+                            });
+                        }else{
+                            cell = $('<td/>',{
+                                text: celltext,
+                            });
+                        }
+                        row.append(cell);
+                    });
+                });
+
+                $('#'+Data.selected+' tr>td:empty').parent().remove();
+                Operations.convertToGraph.table('#'+Data.selected);
+            },
+            json : function(){
+
+            }
         },
         exporting: {
             csv: function(object){
@@ -574,6 +614,90 @@
             json: function(object){
 
             },
+            graphEmbed: function(object){
+
+            }
+        },
+        requests : {
+            getCsv : function(url){
+                $.ajax({
+                    type: 'GET',
+                    url: url,
+                    datatype:'text',
+                    success: function(strData) {
+                        var name;
+                        var urlPathname = Operations.parsing.url(url).pathname;
+                        var pathnameArray = urlPathname.split('/');
+                        name = pathnameArray[pathnameArray.length - 1].split('.')[0];
+                        Data.selected = name;
+                        //csv parser courtesy of http://www.bennadel.com/
+                        strDelimiter = ",";
+                        // Create a regular expression to parse the CSV values.
+                        var objPattern = new RegExp(
+                            (
+                                // Delimiters.
+                                "(\\" + strDelimiter + "|\\r?\\n|\\r|^)" +
+                                // Quoted fields.
+                                "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+                                // Standard fields.
+                                "([^\"\\" + strDelimiter + "\\r\\n]*))"
+                            ),
+                            "gi"
+                            );
+                        var arrData = [[]];
+                        var arrMatches = null;
+                        while (arrMatches = objPattern.exec( strData )){
+                            var strMatchedDelimiter = arrMatches[ 1 ];
+                            if (
+                                strMatchedDelimiter.length &&
+                                (strMatchedDelimiter != strDelimiter)
+                                ){
+                                arrData.push( [] );
+                            }
+                            if (arrMatches[ 2 ]){
+                                var strMatchedValue = arrMatches[ 2 ].replace(
+                                    new RegExp( "\"\"", "g" ),
+                                    "\""
+                                    );
+                            } else {
+                                var strMatchedValue = arrMatches[ 3 ];
+                            }
+                            arrData[ arrData.length - 1 ].push( strMatchedValue );
+                        }
+
+                        Data.datasets[name] = arrData;
+                        Operations.convertToTable.csv(arrData);
+                        return arrData;
+                    }
+                });
+            }
+        },
+        parsing : {
+            url : function(url){
+                var parser = document.createElement('a'),
+                    searchObject = {},
+                    queries, split, i;
+                // Let the browser do the work
+                parser.href = url;
+                // Convert query string to object
+                queries = parser.search.replace(/^\?/, '').split('&');
+                for( i = 0; i < queries.length; i++ ) {
+                    split = queries[i].split('=');
+                    searchObject[split[0]] = split[1];
+                }
+                var sourceArray = parser.host.split('.');
+                return {
+                    protocol: parser.protocol,
+                    host: parser.host,
+                    source: sourceArray[sourceArray.length-2],
+                    hostname: parser.hostname,
+                    port: parser.port,
+                    pathname: parser.pathname,
+                    search: parser.search,
+                    searchObject: searchObject,
+                    hash: parser.hash
+                };
+            }
         },
         sorting: {
             quicksort: function(a,order) {
@@ -656,6 +780,7 @@
 
     Data = {
         datasets : {},
+        selected : null,
         loadSettingsDict : function(){
             //var new_graph = dataset_name == null || undefined ? true : false;
             var graphName = Object.keys(Graph.graphList[Data.selectedDatasetIndex]).toString();
