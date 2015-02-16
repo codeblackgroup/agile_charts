@@ -99,6 +99,9 @@
             Template.setup.hoverEvents();
             Template.setup.customEvents();
         },
+        dataRender : function(){
+            Template.setup.tableDatasets();
+        },
         setup: {
             changeEvents : function(){
                 $("#select_graph_dataset_name").change(function(e){
@@ -147,6 +150,11 @@
             customEvents : function(){
 
             },
+            tableDatasets : function(){
+                $('.hc-dataset-table').each(function(i,table){
+                    Operations.convertToGraph.table('#'+table.id);
+                });
+            }
         },
         
         generateAllGraphs: function() {
@@ -226,7 +234,8 @@
         graphNames: [],
         graphObjects: [],
         updateAllGraphs: function() {
-            $(".chartlist").html('');
+            $('.chartlist').html('');
+            $('.datasetlist').html('');
             $(Graph.graphList).each(function(i, item) {
                 //update all graphs
                 if (typeof item == "object") {
@@ -241,6 +250,13 @@
 
                     $(".chartlist").append(outputElement);
                 }
+            });
+            $(Object.keys(Data.datasets)).each(function(i,item){
+                var outputElement = $("<li/>", {
+                   "data-value": item,
+                    text: item,
+                });
+                $(".datasetlist").append(outputElement);
             });
             if(Graph.graphList.length == 0){
                 $(".chartlist").append("<li>No charts to display.</li>")
@@ -422,8 +438,9 @@
 
             if (newGraph) {
                 //creating new graph
-                var graphName = "";
+                var graphName = null;
                 var modalTitle = "New Graph";
+                var index = Graph.graphNames.length;
             } else {
                 //editing existing graph
                 Data.sgIndex = index;
@@ -436,13 +453,14 @@
                 var dict = Data.graphSettingsDict;
                 dict['independent_variable'] = possibleVariables;
                 dict['dependent_variable'] = possibleVariables;
+                var index = Data.sgIndex;
             }
 
             //fill elements appropriately
             $("#graph_title").text(modalTitle);
             $("#graph_name_input").val(graphName);
 
-            Data.loadSettingsDict(graphName,graphObject['dataset_name']);
+            Data.loadSettingsDict(graphName);
             //delete button
             $("#delete_graph").html('');
             if(!newGraph){
@@ -473,13 +491,13 @@
                         'size': $("#select_graph_size :selected").text(),
                         'order': $("#select_graph_order :selected").text(),
                         'format': $("#select_graph_format :selected").text(),
-                        'index': Data.sgIndex,
+                        'index': index,
                         'id': $("#graph_name_input").val(),
                     };
                     if (!newGraph) {
                         Graph.saveGraphSettings(graphObject, newGraphObject);
                     } else {
-                        Graph.graph.createNewGraph(newGraphObject);
+                        Graph.createNewGraph(newGraphObject);
                     }
                 }
             });
@@ -498,10 +516,9 @@
             g.name = Graph.graphNames.indexOf(g.name) > -1 ? g.name + ' ('+g.index+')' : g.name;
             //add index to object id, save
             g.id = g.id.replace(/ /g, '_')+'_'+g.index;
-            var graphList = Graph.graphList;
             Graph.graphNames.push(g.name);
-            graphList[g.index] = {};
-            graphList[g.index][g.name] = graphObject;
+            Graph.graphList[g.index] = {};
+            Graph.graphList[g.index][g.name] = graphObject;
             Template.generateAllGraphs();
         },
         deleteGraph: function(index) {
@@ -549,7 +566,7 @@
                     'name': $table.attr('data-name') || 'Default Graph ' + Graph.graphList.length,
                     'independent_variable': $table.attr('data-independent-variable') || headerKeys[0],
                     'dependent_variable': $table.attr('data-dependent-variable') || firstNumericHk, 
-                    'size': $table.attr('data-size') || '2x1',
+                    'size': $table.attr('data-size') || '3x1',
                     'type': $table.attr('data-type') || 'column',
                     'order': $table.attr('data-order') || 'None',
                     'id': $table.attr('id') || id,
@@ -781,21 +798,30 @@
     Data = {
         datasets : {},
         selected : null,
-        loadSettingsDict : function(){
-            //var new_graph = dataset_name == null || undefined ? true : false;
-            var graphName = Object.keys(Graph.graphList[Data.selectedDatasetIndex]).toString();
-            var thisGraph = Graph.graphList[Data.selectedDatasetIndex][graphName];
+        loadSettingsDict : function(graphName){
+            var newGraph = graphName == null || undefined ? true : false;
+            if(!newGraph){
+                var graphName = Object.keys(Graph.graphList[Data.selectedDatasetIndex]).toString();
+                var thisGraph = Graph.graphList[Data.selectedDatasetIndex][graphName];
+            }
             //load each setting according to selected dataset and, if !new_graph, graph state 
             $(Data.graphSettingsDict['attributes']).each(function(i, attribute) {
                 $("#select_graph_" + attribute).html('');
                 $(Data.graphSettingsDict[attribute]).each(function(j, item) {
-                    //if(!new_graph){}
-                    var $option = $('<option/>',{
-                        class: attribute + '_attr',
-                        value: item,
-                        text: item,
-                        'selected':thisGraph[attribute] == item ? 'selected' : false,
-                    });
+                    if(!newGraph){
+                        var $option = $('<option/>',{
+                            class: attribute + '_attr',
+                            value: item,
+                            text: item,
+                            'selected':thisGraph[attribute] == item ? 'selected' : false,
+                        }); 
+                    }else{
+                        var $option = $('<option/>',{
+                            class: attribute + '_attr',
+                            value: item,
+                            text: item,
+                        });  
+                    }
                     //dont re-append existing datasets
                     if(Object.keys(Data.datasets).indexOf($option.value) == -1){
                         $("#select_graph_" + attribute).append($option);
@@ -822,7 +848,7 @@
                         text: variable,
                         selected: thisGraph[varType] == variable ? 'selected' : false,
                     });      
-                    elements[vartype].append($option.clone());
+                    elements[varType].append($option.clone());
                 });
             });
         },
@@ -839,5 +865,6 @@
     }
 
     Template.render();
+    Template.dataRender();
 
 }(window.agile = window.agile || {}, jQuery));

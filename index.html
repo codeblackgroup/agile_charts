@@ -13,10 +13,30 @@
         <!-- Sidebar -->
 	        <div id="sidebar-wrapper">
 	        	<div class="page-header col-md-12">
-	        		<h1>Agile </h1><small>a jQuery Highcharts Wrapper</small>
+	        		<h1>Agile.js</h1><small>a jQuery Highcharts Wrapper</small>
 	        	</div>
-	    		<ul class="sidebar-nav chartlist">
-	    		</ul>
+	        	<div class="col-md-12">
+	        		<button class="btn btn-default" onclick="return Graph.loadGraphSettings()">
+	       				Create Graph
+		        	</button>
+		        	<br><br>
+		        	<button class="btn btn-default" onclick="return $('#import_dataset').modal()">
+		       			New Dataset
+		        	</button>
+		        	<br><br>
+		        	<!--
+		        	<button class="btn btn-default" onclick="return $('#export_dataset').modal()">
+		       			Export Dataset
+		        	</button>
+		        	-->
+		        	<h2>Datasets</h2>
+		        	<ul class="sidebar-nav datasetlist">
+		        	</ul>
+		        	<h2>Graphs</h2>
+		    		<ul class="sidebar-nav chartlist">
+		    		</ul>
+	        	</div>
+	        	
 			</div>
         <!-- /#sidebar-wrapper -->
 
@@ -24,14 +44,21 @@
         <div id="page-content-wrapper">
             <div class="container-fluid">
             	<div class="row">
+            		<normal>To convert one of the <b>tables</b> below to a graph, open up console (F12) and type:<br>
+            		 <code>Agile.createGraph({dataType:'table',identifier:'#affluent_black_communities'})</code> or, click: <br>
+            		 "Create Graph" in the left sidebar. 
+            		 <br><br>
+            		 To import a <b>csv</b> to convert to a table and graph, open up console and type:<br>
+            		 <code>Agile.createGraph({dataType:'csv',identifier:'/assets/sample.csv'})</code> or click: <br>
+            		 "New Dataset in the left sidebar."
+            		 <br><br>
+            		The two tables below are automatically converted to graphs on page load. 
+            		</normal>
             		<div class="col-lg-12">
             			<!-- datasets -->
             			<div class="page-header">
             				<h2>Tables</h2>
             			</div>
-            			<br>
-            			<code> To start, open up the console (F12) and type: Operations.convert.table("#affluent_black_communities") </code>
-            			<br>
             			<div class="tables-container">
             				<div class="col-md-12">
 
@@ -43,7 +70,7 @@
             						   class="table hc-dataset-table"
             						   data-independent-variable="Name"
             						   data-dependent-variable="Net Worth"
-            						   data-size="2x1"
+            						   data-size="3x1"
             						   data-type="column"
             						   data-name="Wealthy Black People"
             						   data-dataset-id="wealthy_black_people"
@@ -83,7 +110,7 @@
             						   class="table hc-dataset-table"
             						   data-independent-variable="Community"
             						   data-dependent-variable="Median Household Income"
-            						   data-size="2x1"
+            						   data-size="3x1"
             						   data-type="column"
             						   data-name="Affluent Black Communities"
             						   data-dataset-id="affluent_black_communities"
@@ -226,6 +253,78 @@
 						</div>
 					</div>
 		</div>
+		<div class="modal fade" id="import_dataset">
+	            		<div class="modal-dialog">
+	            			<div class="modal-content">
+	            				<div class="modal-header">
+	            					<h2> Import Dataset </h2>
+	            				</div>
+	            				<div class="modal-body">
+	            					<div role="tabpanel">
+				                        <ul class="nav nav-tabs" role="tablist">
+				                            <li role="presentation" class="active">
+				                                <a href="#import-csv" aria-controls="#import-csv" role="tab" data-toggle="tab" id="import-csv-tab">Import CSV</a>
+				                            </li>
+				                            <!--
+				                            <li role="presentation">
+				                                <a href="#import-json" aria-controls="#import-json" role="tab" data-toggle="tab" id="import-json-tab">Import JSON</a>
+				                            </li>
+				                        -->
+				                        </ul>
+				                    </div>
+	            				</div>
+	            				 <div class="tab-content">
+	            				 	The CSV must be delimited by commas.
+			                        <div role="tabpanel" class="tab-pane fade in active" id="import-csv">
+			                        	<input type="text" id="csv-url" class="form-control" value="" placeholder="Enter URL to CSV..." />
+			                        	<button class="btn btn-default" onclick="Agile.createGraph({dataType:'csv',identifier:$('#csv-url').val()})">
+			                        		Create Graph
+			                        	</button>
+			                        </div>
+			                        <!--
+			                        <div role="tabpanel" class="tab-pane fade" id="import-json">
+			                        </div>
+			                    -->
+	            				<div class="modal-footer">
+
+	            				</div>
+	            			</div>
+
+	            		</div>
+	    </div>
+	    <div class="modal fade" id="import_dataset">
+	            		<div class="modal-dialog">
+	            			<div class="modal-content">
+	            				<div class="modal-header">
+	            					<h2> Export Dataset </h2>
+	            				</div>
+	            				<div class="modal-body">
+	            					<div role="tabpanel">
+				                        <ul class="nav nav-tabs" role="tablist">
+				                            <li role="presentation" class="active">
+				                                <a href="#export-csv" aria-controls="#export-csv" role="tab" data-toggle="tab" id="export-csv-tab">Export to CSV</a>
+				                            </li>
+				                            <li role="presentation">
+				                                <a href="#export-json" aria-controls="#export-json" role="tab" data-toggle="tab" id="export-json-tab">Export to JSON</a>
+				                            </li>
+				                            <li role="presentation">
+				                                <a href="#export-graph" aria-controls="#export-graph" role="tab" data-toggle="tab" id="export-graph-tab">Export to Embeddable Graph</a>
+				                            </li>
+				                        </ul>
+				                    </div>
+	            				</div>
+	            				 <div class="tab-content">
+			                        <div role="tabpanel" class="tab-pane fade in active" id="import-csv">
+			                        </div>
+			                        <div role="tabpanel" class="tab-pane fade in active" id="import-json">
+			                        </div>
+	            				<div class="modal-footer">
+
+	            				</div>
+	            			</div>
+
+	            		</div>
+	    </div>
 		
 		<script src="js/jquery-2.1.1.min.js"></script>
 		<script type="text/javascript" src="js/bootstrap.min.js"/></script>
