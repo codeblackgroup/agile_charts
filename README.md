@@ -7,6 +7,10 @@ Agile.js is a jquery plugin that makes it easy to modify tables and create graph
 Currently under construction.
  
 ## Usage
+
+To run the demo locally, clone the repo, cd into agile and do:
+  
+    python -m SimpleHTTPServer
  
 To create a graph from a table: 
 

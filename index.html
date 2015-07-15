@@ -1,47 +1,91 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
-	<head>
-		<title> Agile.js Demo </title>
-		<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css"/>
-		<link rel="stylesheet" type="text/css" href="css/style.css" />
-	</head>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title> Agile.js Highcharts Wrapper</title>
+        <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
+		<link rel="stylesheet" type="text/css" href="/static/css/agile_styles.css" />
+        <meta content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no' name='viewport'>
+        <!-- bootstrap 3.0.2 -->
+        <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
+        <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
 
-	<body>
-		<div id="wrapper">
-			<div class="vh30"></div>
-        <!-- Sidebar -->
-	        <div id="sidebar-wrapper">
-	        	<div class="page-header col-md-12">
-	        		<h1>Agile.js</h1><small>a jQuery Highcharts Wrapper</small>
-	        	</div>
-	        	<div class="col-md-12">
-	        		<button class="btn btn-default" onclick="return Graph.loadGraphSettings()">
-	       				Create Graph
-		        	</button>
-		        	<br><br>
-		        	<button class="btn btn-default" onclick="return $('#import_dataset').modal()">
-		       			New Dataset
-		        	</button>
-		        	<br><br>
-		        	<!--
-		        	<button class="btn btn-default" onclick="return $('#export_dataset').modal()">
-		       			Export Dataset
-		        	</button>
-		        	-->
-		        	<h2>Datasets</h2>
-		        	<ul class="sidebar-nav datasetlist">
-		        	</ul>
-		        	<h2>Graphs</h2>
-		    		<ul class="sidebar-nav chartlist">
-		    		</ul>
-	        	</div>
-	        	
-			</div>
-        <!-- /#sidebar-wrapper -->
+        <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
 
-        <!-- Page Content -->
-        <div id="page-content-wrapper">
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+          <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+          <script src="https://oss.maxcdn.com/libs/respond./static/js/1.3.0/respond.min.js"></script>
+        <![endif]-->
+    </head>
+    <body class="skin-black">
+    	<div class="vh30"></div>
+        <!-- header logo: style can be found in header.less -->
+        <header class="header">
+            <a href="/" class="logo">
+                <!-- Add the class icon to your logo image or logo icon to add the margining -->
+                <i class="fa fa-area-chart"></i>
+                Agile.js
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top" role="navigation">
+                <!-- Sidebar toggle button-->
+                
+               
+            </nav>
+        </header>
+        <div class="wrapper row-offcanvas row-offcanvas-left">
+            <!-- Left side column. contains the logo and sidebar -->
+            <aside class="left-side sidebar-offcanvas">
+                <!-- sidebar: style can be found in sidebar.less -->
+                <section class="sidebar">
+                    <ul class="sidebar-menu">
+                        <li class="active">
+                            <a href="/dashboard">
+                                <i class="fa fa-sliders"></i> <span>Options</span>
+                            </a>
+                        </li>
+                        <li class="treeview" onclick="return Graph.loadGraphSettings()">
+	       					<a href="#">
+	       						<i class="fa fa-plus"></i>
+	       						<span>Create Graph</span>
+	       					</a>
+		        		</li>
+		        		<li class="treeview" onclick="return $('#import_dataset').modal()">
+			       			<a href="#">
+			       				<i class="fa fa-bar-chart-o"></i>
+			       				<span>New Dataset</span>
+			       			</a>
+			        	</li>
+			        	<li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-th-large"></i>
+                                <span>Datasets</span>
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </a>
+                            <ul class="treeview-menu datasetlist">
+                            </ul>
+                        </li>
+                        <li class="treeview">
+                            <a href="#">
+                                <i class="fa fa-th"></i>
+                                <span>Graphs</span>
+                                <i class="fa fa-angle-left pull-right"></i>
+                            </a>
+                            <ul class="treeview-menu chartlist">
+                            </ul>
+                        </li>
+                     </ul>
+                </section>
+                <!-- /.sidebar -->
+            </aside>
+
+            <!-- Right side column. Contains the navbar and content of the page -->
+            <aside class="right-side">
+                <!-- Main content -->
+                <section class="content" id="cernvers">
+                   <div id="page-content-wrapper">
             <div class="container-fluid">
             	<div class="row">
             		<normal>To convert one of the <b>tables</b> below to a graph, open up console (F12) and type:<br>
@@ -253,6 +297,17 @@
 						</div>
 					</div>
 		</div>
+                </section><!-- /.content -->
+            </aside><!-- /.right-side -->
+        </div><!-- ./wrapper -->
+
+        <!-- add new calendar event modal -->
+
+
+       
+
+
+       
 		<div class="modal fade" id="import_dataset">
 	            		<div class="modal-dialog">
 	            			<div class="modal-content">
@@ -326,10 +381,19 @@
 	            		</div>
 	    </div>
 		
-		<script src="js/jquery-2.1.1.min.js"></script>
-		<script type="text/javascript" src="js/bootstrap.min.js"/></script>
-		<script type="text/javascript" src="js/highcharts.js"/></script>
-		<script type="text/javascript" src="js/agile.js"/></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	    <!--
+	    <script type="text/javascript" src="/static/js/jquery-2.1.1.min.js"></script>
+	    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+	    -->
+	    <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" /></script>
+		<script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/highcharts/4.1.5/highcharts.js"/></script>
+		
+		<script type="text/javascript" src="/static/js/main.js"/></script>
+		<script type="text/javascript" src="/static/js/app.js"/></script>
+		<script type="text/javascript" src="/static/js/agile.js"/></script>
 
+
+        {% block more_scripts %}{% endblock %}
 	</body>
 </html>
