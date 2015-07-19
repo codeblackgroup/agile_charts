@@ -4,6 +4,7 @@
  
 Agile.js is a jquery plugin that makes it easy to modify tables and create graphs from tables and csv's.
 
+[Example Use](http://africanawiki.org/_blackbox/coontown/)
 [Demo](http://mikejohnsonjr.com/projects/agile)
  
 ## Usage
