@@ -43,7 +43,19 @@ When incorporating agile.js and agile_styles.css into your own projects for visu
     <div class="vh30" style="display:none"></div>
     <div class="tables-container" style="display:none"></div>
     <div id="graph_panel_container"></div>
-    
+
+#Coming Soon
+
+ - Defining Options during graph creation
+ - Exporting (PNG/PDF/JPG/CSV/JSON) and Embedding (HTML5) Graphs and Tables
+ - Converting JSON to Graph
+ - D3 Integration
+ 
+# Known Bugs
+
+ - Treemap graph type conversion to any other graph renders black bar, working on a solution for this
+ 
+
 ## Credits
  
 Creator: Mike Johnson Jr.
