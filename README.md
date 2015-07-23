@@ -37,16 +37,13 @@ To append a column in a table:
         operation: 'subtract',    //operation to perform, in this case, col1 - col2
     })
 
-When including agile.js and agile.css into your own projects, be sure to include this in your html file
+When incorporating agile.js and agile_styles.css into your own projects for visualizations, be sure to include this in your html file:
 
     <div class="chartlist datasetlist" style="display:none"></div>
     <div class="vh30" style="display:none"></div>
     <div class="tables-container" style="display:none"></div>
-    <div id="graph_panel_container">
-
-With of course agile.css and agile.js
-
-</div>
+    <div id="graph_panel_container"></div>
+    
 ## Credits
  
 Creator: Mike Johnson Jr.
