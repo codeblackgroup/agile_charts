@@ -37,14 +37,16 @@ To append a column in a table:
         operation: 'subtract',    //operation to perform, in this case, col1 - col2
     })
 
-## Contributing
- 
-1. Fork it!
-2. Create your feature branch: `git checkout -b my-new-feature`
-3. Commit your changes: `git commit -am 'Add some feature'`
-4. Push to the branch: `git push origin my-new-feature`
-5. Submit a pull request :P
+When including agile.js and agile.css into your own projects, be sure to include this in your html file
 
+    <div class="chartlist datasetlist" style="display:none"></div>
+    <div class="vh30" style="display:none"></div>
+    <div class="tables-container" style="display:none"></div>
+    <div id="graph_panel_container">
+
+With of course agile.css and agile.js
+
+</div>
 ## Credits
  
 Creator: Mike Johnson Jr.
